@@ -1,7 +1,7 @@
-# Three-demo
+# Three Demo
 A demo project of three.js
 
-## Web content
+## Web Content
 This is a demo project of three.js.
 
 In this demo, you can see a 3D yellow dog. You can rotate the dog by holding and dragging your mouse.
