@@ -1,0 +1,44 @@
+{
+    "track1":{
+        "name":"happy when you're not here",
+        "artist":"In Love With A Ghost",
+        "uri":"./music/happy-when-you-re-not-here.mp3",
+        "mood":"peaceful"
+    },
+    "track2":{
+        "name":"Introduction",
+        "artist":"In Love With A Ghost",
+        "uri":"./music/Introduction.mp3",
+        "mood":"free"
+    },
+    "track3":{
+        "name":"iced tea for breakfast",
+        "artist":"In Love With A Ghost",
+        "uri":"./music/iced-tea-for-breakfast.mp3",
+        "mood":"calm"
+    },
+    "track4":{
+        "name":"Merry Christmas Mr. Lawrence",
+        "artist":"Ryuichi Sakamoto",
+        "uri":"./music/Merry-Christmas-Mr.-Lawrence.mp3",
+        "mood":"sorrowful"
+    },
+    "track5":{
+        "name":"Am I a Girl? Am I a Boy? Do I Really Care?",
+        "artist":"In Love With A Ghost",
+        "uri":"./music/Am-I-a-Girl-Am-I-a-Boy-Do-I-Really-Care.mp3",
+        "mood":"bounce"
+    },
+    "track6":{
+        "name":"Chilling At Nemu's Place",
+        "artist":"In Love With A Ghost",
+        "uri":"./music/Chilling-At-Nemu-s-Place.mp3",
+        "mood":"curious"
+    },
+    "track7":{
+        "name":"Disco Yes",
+        "artist":"Tom Misch",
+        "uri":"./music/Disco-Yes.mp3",
+        "mood":"lively"
+    }
+}
