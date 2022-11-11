@@ -40,6 +40,7 @@ function switchSong(){
     musicIndex = allMusicIndex.splice(Math.floor(Math.random()*allMusicIndex.length),1);
     console.log(musicIndex);
     playMusic(musicIndex);
+    audioPlay.play();
     playIcon.setAttribute("src", "./image/pauseIcon.png");
 }
 
