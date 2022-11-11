@@ -441,7 +441,7 @@ function peacefulAnimate(time){
 function dogReaction(time){
     requestAnimationFrame(dogReaction);
     if(audioPlay.paused){
-        scene.background = new THREE.Color(0xFFC1C1);
+        //scene.background = new THREE.Color(0xFFC1C1);
         defaultAnimate();
         console.log("default");
     }else{
