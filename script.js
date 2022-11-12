@@ -5,7 +5,7 @@ import { DragControls } from "./node_modules/three/examples/jsm/controls/DragCon
 
 
 
-//variables
+//elements
 const switchButton = document.querySelector(".switchbutton");
 const playButton = document.querySelector(".playbutton");
 const playIcon = document.querySelector(".playicon");
@@ -18,30 +18,36 @@ const audioPlay = document.querySelector("#audioplay");
 //music information variables
 let musicIndex = 1;
 let allMusicIndex = [1,2,3,4,5,6,7];
+let firstsong = true;
 let mood;
 
-//play the current music
-function playMusic(index){
-    fetch("./music/music-list.json")
-        .then((response) => response.json())
-        .then((list) => {
-            console.log(list["track"+index].uri);
-            let musicUri = list["track"+index].uri;
-            audioPlay.setAttribute("src", musicUri);
-            mood = list["track"+index].mood;
-        });
-}
-
-//randomly switch the song until every song is played
-function switchSong(){
+//randomly choose the song until every song is played
+function chooseSong(){
     if(allMusicIndex.length===0){
         allMusicIndex = [1,2,3,4,5,6,7];
     }
     musicIndex = allMusicIndex.splice(Math.floor(Math.random()*allMusicIndex.length),1);
     console.log(musicIndex);
-    playMusic(musicIndex);
-    audioPlay.play();
-    playIcon.setAttribute("src", "./image/pauseIcon.png");
+}
+
+//play the current music
+function playMusic(){
+    fetch("./music/music-list.json")
+        .then((response) => response.json())
+        .then((list) => {
+            chooseSong();
+            console.log(list["track"+musicIndex].uri);
+            let musicUri = list["track"+musicIndex].uri;
+            audioPlay.setAttribute("src", musicUri);
+            mood = list["track"+musicIndex].mood;
+            if(firstsong){
+                audioPlay.pause();
+                firstsong=false;
+                playIcon.setAttribute("src", "./image/playIcon.png");
+            }else{
+                playIcon.setAttribute("src", "./image/pauseIcon.png");
+            }
+        });
 }
 
 //control audio, play a song or stop a song
@@ -57,11 +63,10 @@ function controlSongPlay(){
 }
 
 //choose the first song, then play or switch
-switchSong();
-audioPlay.pause();
+playMusic();
 playIcon.setAttribute("src", "./image/playIcon.png");
 playButton.addEventListener("click", controlSongPlay);
-switchButton.addEventListener("click", switchSong);
+switchButton.addEventListener("click", playMusic);
 
 
 
