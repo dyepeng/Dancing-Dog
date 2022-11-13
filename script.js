@@ -443,7 +443,31 @@ window.addEventListener('DOMContentLoaded',function () {
     }
 
     function sorrowfulAnimate(time){
+        function headGroupDown(speed, amplitude){
+            head_group.rotation.x=Math.PI/20+0*amplitude*Math.sin(speed*time);
+            head_group.rotation.y=amplitude*Math.sin(speed*time);
+        }
 
+        headGroupDown(0.002, 0.05);
+
+        function curlFeet(speed, amplitude){
+            let foot_index = 0;
+            feet.forEach(foot =>{
+                foot.position.x=(1.2+amplitude*Math.sin(speed*time))*feet_position[foot_index][0];
+                foot.position.y=0.5*feet_position[foot_index][1];
+                foot.position.z=(1.1+amplitude*Math.sin(speed*time))*feet_position[foot_index][2];
+                foot_index++;
+            })
+        }
+
+        curlFeet(0.003, 0.05);
+
+        function downTail(speed, amplitude){
+            tail.rotation.x = Math.PI*4/7;
+            tail.rotation.z = amplitude*Math.cos(speed*time);
+        }
+
+        downTail(0.002, 0.1);
     }
 
     //dog react differently to the music mood
@@ -455,6 +479,7 @@ window.addEventListener('DOMContentLoaded',function () {
             console.log("default");
         }else{
             if(mood==="bounce"){
+                //change the background color
                 scene.background = new THREE.Color(0x8FBC8F);
                 bounceAnimate(time);
                 console.log("bounce");
@@ -467,7 +492,7 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="sorrowful"){
                 //change the background color
-                scene.background = new THREE.Color(0x7A378B);
+                scene.background = new THREE.Color(0xCD96CD);
                 sorrowfulAnimate(time);
                 console.log("sorrowful");
             }
