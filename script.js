@@ -17,7 +17,7 @@ window.addEventListener('DOMContentLoaded',function () {
 
     //music information variables
     let musicIndex = 1;
-    let allMusicIndex = [1,2,3,4,5,6,7];
+    let allMusicIndex = [1,2,3,4,5,6];
     let firstsong = true;
     let mood;
 
