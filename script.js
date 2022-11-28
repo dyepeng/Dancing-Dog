@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded',function () {
     const playButton = document.querySelector(".playbutton");
     const playIcon = document.querySelector(".playicon");
     const audioPlay = document.querySelector("#audioplay");
+    const text = this.document.querySelector(".text");
 
 
 
@@ -679,8 +680,10 @@ window.addEventListener('DOMContentLoaded',function () {
         if(audioPlay.paused){
             //scene.background = new THREE.Color(0xFFC1C1);
             //defaultAnimate();
+            text.style.display = "block";
             console.log("default");
         }else{
+            text.style.display = "none";
             if(mood==="bounce"){
                 //change the background color
                 scene.background = new THREE.Color(0x8FBC8F);

@@ -1,7 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap');
+
+.text {
+   position: fixed;
+   z-index: 1;
+   width: 100%;
+   top: 20%;
+}
+
+.text p{
+   background-color: transparent;
+   margin: 0;
+   font-family: 'Bubblegum Sans', cursive;
+   font-size: 24px;
+   text-align: center;
+}
+
 html, body {
     margin: 0;
     height: 100%;
  }
+ 
 .three {
     position: fixed;
     width: 100%;
