@@ -1,6 +1,7 @@
 //import libraries
 import * as THREE from "./node_modules/three/build/three.module.js";
 import { OrbitControls } from "./node_modules/three/examples/jsm/controls/OrbitControls.js";
+import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 import { DragControls } from "./node_modules/three/examples/jsm/controls/DragControls.js";
 
 window.addEventListener('DOMContentLoaded',function () {
@@ -29,6 +30,9 @@ window.addEventListener('DOMContentLoaded',function () {
         console.log(musicIndex);
     }
 
+    //this let is to record the state of last frame for transition
+    let transition=true;
+
     //play the current music
     function playMusic(){
         fetch("./music/music-list.json")
@@ -38,6 +42,9 @@ window.addEventListener('DOMContentLoaded',function () {
                 console.log(list["track"+musicIndex].uri);
                 let musicUri = list["track"+musicIndex].uri;
                 audioPlay.setAttribute("src", musicUri);
+                //before switch dog state we need to set back to default
+                defaultAnimate();
+                transition=true;
                 mood = list["track"+musicIndex].mood;
                 if(firstsong){
                     audioPlay.pause();
@@ -48,7 +55,7 @@ window.addEventListener('DOMContentLoaded',function () {
             });
     }
 
-    //control audio, play a song or stop a song
+    //control audio, play a song or stop a song, change the button icon
     function controlSongPlay(){
         console.log(audioPlay.paused);
         console.log("activate");
@@ -268,6 +275,48 @@ window.addEventListener('DOMContentLoaded',function () {
 
 
 
+    //external model and texture
+
+    //import a bone but not add it now
+    let bone;
+    const loader = new GLTFLoader();
+
+    loader.load(
+        './model/bone/scene.gltf', (gltf) => {
+            gltf.scene.scale.set(0.011,0.011,0.011);
+            bone = gltf.scene;
+        }
+    )
+
+    //import raindrop and texture
+    let rain, rainBuffer;
+    const rainCount = 1000;
+
+    //create rain drop
+    function createCherryBlossom() {
+        const textureLoader = new THREE.TextureLoader();
+        rainBuffer = new THREE.BufferGeometry();
+        let posRain = new Float32Array(rainCount*3);
+        for (let i = 0; i<(rainCount*3); i += 3) {
+            posRain[i] = Math.random() * 200 - 100;
+            posRain[i+1] = Math.random() * 100 - 40;
+            posRain[i+2] = Math.random() * 200 - 100;
+        }
+
+        rainBuffer.setAttribute('position', new THREE.BufferAttribute(posRain, 3));
+        let rainMaterial = new THREE.PointsMaterial({
+            map: textureLoader.load('./image/cherryBlossom.png'),
+            // color: 0x000000,
+            size: 2,
+            transparent: true
+        });
+        rain = new THREE.Points(rainBuffer, rainMaterial);
+    }
+
+    createCherryBlossom();
+
+
+
     //helper system, de-comment if needed
 
     // //add helper if needed
@@ -295,6 +344,10 @@ window.addEventListener('DOMContentLoaded',function () {
 
     //default state of the dog
     function defaultAnimate(time) {
+        function defaultEventSet(){
+            window.removeEventListener('mousemove', dogStare);
+            window.removeEventListener('mousemove', boneMove);
+        }
         function defaultRotationSet(time){
             body.rotation.set(Math.PI/2, 0, 0);
             head.rotation.set(Math.PI*2/3, 0, 0);
@@ -306,6 +359,7 @@ window.addEventListener('DOMContentLoaded',function () {
             earphone_group.rotation.set(0,0,0);
             head_group.rotation.set(0,0,0);
             tail.rotation.set(Math.PI*2/3, 0, 0);
+            dog_group.rotation.set(0,0,0);
         }
         function defaultPositionSet(time){
             head.position.set(0, head_y, head_z);
@@ -335,9 +389,28 @@ window.addEventListener('DOMContentLoaded',function () {
             });
             tail.position.set(0, 2, -8);
         }
+        function removeAdditionalGltf(){
+            if(bone===undefined||bone.parent===null){
+                ;
+            }else{
+                scene.remove(bone);
+                console.log("removebone");
+            }
+            if(rain===undefined||rain.parent===null){
+                ;
+            }else{
+                scene.remove(rain);
+                console.log("removerain");
+            }
+            
+        }
+        defaultEventSet();
         defaultRotationSet(time);
         defaultPositionSet(time);
-    };
+        removeAdditionalGltf();
+
+        camera.position.set(30,10,30);
+    }
 
     //bounce statement of the dog
     function bounceAnimate(time){
@@ -442,6 +515,7 @@ window.addEventListener('DOMContentLoaded',function () {
         dogSwimFly(0.003, 1.5);
     }
 
+    //sorrowful state of the dog
     function sorrowfulAnimate(time){
         function headGroupDown(speed, amplitude){
             head_group.rotation.x=Math.PI/20+0*amplitude*Math.sin(speed*time);
@@ -470,12 +544,141 @@ window.addEventListener('DOMContentLoaded',function () {
         downTail(0.002, 0.1);
     }
 
+    //chill state of the dog
+    function chillAnimate(time){
+        function tailUpDown(speed, amplitude){
+            tail.rotation.x = Math.PI*2/3+amplitude*Math.sin(speed*time);
+        }
+
+        tailUpDown(0.009,0.2);
+
+        function bodyUpDown(speed, amplitude){
+            body.rotation.x = Math.PI/2-amplitude*Math.sin(speed*time);
+        }
+
+        bodyUpDown(0.009,0.05);
+
+        function headGroupShake(speed, amplitude){
+            head_group.rotation.x = amplitude*Math.sin(speed*time);
+            head_group.rotation.y = amplitude*Math.sin(speed*time);
+        }
+
+        headGroupShake(0.009, 0.05);
+
+        //dog_group.rotation.y = Math.PI/2/3;
+        //dog_group.rotation.x = Math.PI/4/3;
+    }
+
+    //hungry state of the dog
+    //to remove eventlistener later we need to set a global function
+    //dog look at the mouse
+    function dogStare(event){
+        head_group.rotation.y = (event.clientX / window.innerWidth) - 0.5;
+        head_group.rotation.x = (event.clientY / window.innerHeight) - 0.5;
+    }
+    //bone move with the mouse
+    function boneMove(event){
+        bone.position.x = 2+((event.clientX / window.innerWidth) - 0.5) * 40;
+        bone.position.y = 7+((event.clientY / window.innerHeight) - 0.5) * -40;
+        bone.position.z = 21;
+    }
+    function hungryAnimate(time) {      
+        if(transition){
+            camera.position.set(6,10,42);
+            scene.add(bone);
+            console.log("addbone");
+            bone.position.set(2,7,21);        
+            bone.name='bone';
+        }               
+        
+        window.addEventListener('mousemove', dogStare);
+        window.addEventListener('mousemove', boneMove);
+
+        function feetBounce(speed, amplitude){
+            const phase_array = [0,2,4,6];
+            let foot_index = 0;
+            feet.forEach(foot =>{
+                foot.position.y=feet_position[foot_index][1]+amplitude*Math.sin(speed*time+phase_array[foot_index]);
+                foot.position.x=feet_position[foot_index][0]-amplitude*Math.cos(speed*time+phase_array[foot_index]);
+                foot_index++;
+            })
+        }
+
+        feetBounce(0.03,0.7);
+    }
+
+    //spring state of the dog
+    function springAnimate(time){
+        if(transition){
+            camera.position.set(6,-4,43);
+            scene.add(rain);
+            console.log("addrain");
+        }
+
+        function headGroupUp(speed, amplitude){
+            head_group.rotation.x=-Math.PI/30+0*amplitude*Math.sin(speed*time);
+            head_group.rotation.y=amplitude*Math.sin(speed*time);
+        }
+
+        headGroupUp(0.002, 0.05);
+
+        function earWave(speed, amplitude){
+            ears.forEach(ear => {
+                if(ear.rotation.y === 0){
+                    ear.rotation.z=amplitude*Math.sin(speed*time);
+                }else{
+                    ear.rotation.x=amplitude*Math.sin(speed*time+1);
+                }
+            })
+        }
+
+        earWave(0.007, 0.1);
+        
+        function curlFeet(speed, amplitude){
+            let foot_index = 0;
+            feet.forEach(foot =>{
+                foot.position.x=(1.2+amplitude*Math.sin(speed*time))*feet_position[foot_index][0];
+                foot.position.y=0.5*feet_position[foot_index][1];
+                foot.position.z=(1.1+amplitude*Math.sin(speed*time))*feet_position[foot_index][2];
+                foot_index++;
+            })
+        }
+
+        curlFeet(0.002, 0.1);
+
+        function downTail(speed, amplitude){
+            tail.rotation.x = Math.PI*4/7;
+            tail.rotation.z = amplitude*Math.cos(speed*time);
+        }
+
+        downTail(0.002, 0.2);
+
+        function fall(){
+            const positions = rain.geometry.attributes.position.array;
+            for (let i=0; i<(rainCount*3); i += 3) {
+                let speed = 0.2;
+                positions[i] += Math.random()*0.06 - 0.03;
+                positions[i+1] -= speed + Math.random() * 0.05;
+                positions[i+2] += Math.random()*0.06 - 0.03;
+                if (positions[i+1] < -40) {
+                    positions[i+1] = Math.random() * 100 - 40;
+                }
+                rain.geometry.attributes.position.needsUpdate = true;
+            }
+        }
+        
+        fall();
+
+    }
+
+
+
     //dog react differently to the music mood
     function dogReaction(time){
         requestAnimationFrame(dogReaction);
         if(audioPlay.paused){
             //scene.background = new THREE.Color(0xFFC1C1);
-            defaultAnimate();
+            //defaultAnimate();
             console.log("default");
         }else{
             if(mood==="bounce"){
@@ -492,10 +695,29 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="sorrowful"){
                 //change the background color
-                scene.background = new THREE.Color(0xCD96CD);
+                scene.background = new THREE.Color(0x696969);
                 sorrowfulAnimate(time);
                 console.log("sorrowful");
             }
+            if(mood==="chill"){
+                //change the background color
+                scene.background = new THREE.Color(0x000080);
+                chillAnimate(time);
+                console.log("chill");
+            }
+            if(mood==="hungry"){
+                //change the background color
+                scene.background = new THREE.Color(0xFED867);
+                hungryAnimate(time);
+                console.log("hungry");
+            }
+            if(mood==="spring"){
+                //change the background color
+                scene.background = new THREE.Color(0xFFE4E1);
+                springAnimate(time);
+                console.log("spring");
+            }
+            transition=false;
         }
         controls.update();
         renderer.render(scene, camera);

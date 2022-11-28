@@ -1,15 +1,15 @@
 {
     "track1":{
-        "name":"happy when you're not here",
-        "artist":"In Love With A Ghost",
-        "uri":"./music/happy-when-you-re-not-here.mp3",
-        "mood":"calm"
+        "name":"barberbeat",
+        "artist":"Macroblank",
+        "uri":"./music/barberbeat.mp3",
+        "mood":"chill"
     },
     "track2":{
-        "name":"Introduction",
-        "artist":"In Love With A Ghost",
-        "uri":"./music/Introduction.mp3",
-        "mood":"free"
+        "name":"cherry-blossom-and-you",
+        "artist":"The Epitone Project",
+        "uri":"./music/cherry-blossom-and-you.mp3",
+        "mood":"spring"
     },
     "track3":{
         "name":"iced tea for breakfast",
@@ -30,10 +30,10 @@
         "mood":"bounce"
     },
     "track6":{
-        "name":"Chilling At Nemu's Place",
-        "artist":"In Love With A Ghost",
-        "uri":"./music/Chilling-At-Nemu-s-Place.mp3",
-        "mood":"curious"
+        "name":"chicken-wing",
+        "artist":"Saif Shawaf",
+        "uri":"./music/chicken-wing.mp3",
+        "mood": "hungry"
     },
     "track7":{
         "name":"Disco Yes",
