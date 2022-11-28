@@ -611,7 +611,7 @@ window.addEventListener('DOMContentLoaded',function () {
     //spring state of the dog
     function springAnimate(time){
         if(transition){
-            camera.position.set(6,-4,43);
+            camera.position.set(30,5,32);
             scene.add(rain);
             console.log("addrain");
         }
@@ -680,7 +680,7 @@ window.addEventListener('DOMContentLoaded',function () {
         if(audioPlay.paused){
             //scene.background = new THREE.Color(0xFFC1C1);
             //defaultAnimate();
-            text.style.display = "block";
+            //text.style.display = "block";
             console.log("default");
         }else{
             text.style.display = "none";
@@ -704,7 +704,7 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="chill"){
                 //change the background color
-                scene.background = new THREE.Color(0x000080);
+                scene.background = new THREE.Color(0xCD7054);
                 chillAnimate(time);
                 console.log("chill");
             }
@@ -716,7 +716,7 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="spring"){
                 //change the background color
-                scene.background = new THREE.Color(0xFFE4E1);
+                scene.background = new THREE.Color(0x363636);
                 springAnimate(time);
                 console.log("spring");
             }
