@@ -698,7 +698,7 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="sorrowful"){
                 //change the background color
-                scene.background = new THREE.Color(0x696969);
+                scene.background = new THREE.Color(0xC06C84);
                 sorrowfulAnimate(time);
                 console.log("sorrowful");
             }
