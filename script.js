@@ -24,7 +24,7 @@ window.addEventListener('DOMContentLoaded',function () {
     //randomly choose the song until every song is played
     function chooseSong(){
         if(allMusicIndex.length===0){
-            allMusicIndex = [1,2,3,4,5,6,7];
+            allMusicIndex = [1,2,3,4,5,6];
         }
         musicIndex = allMusicIndex.splice(Math.floor(Math.random()*allMusicIndex.length),1);
         console.log(musicIndex);
