@@ -611,7 +611,7 @@ window.addEventListener('DOMContentLoaded',function () {
     //spring state of the dog
     function springAnimate(time){
         if(transition){
-            camera.position.set(30,5,32);
+            camera.position.set(26,5,35);
             scene.add(rain);
             console.log("addrain");
         }
