@@ -125,7 +125,7 @@ window.addEventListener('DOMContentLoaded',function () {
     //creat a bubble MeshPhongMaterial
     const bubblematerial = new THREE.MeshNormalMaterial( {
         //color: 0xF0F8FF,
-        opacity: 0.7,
+        opacity: 0.6,
         transparent: true,
         side: THREE.DoubleSide,
     } );
