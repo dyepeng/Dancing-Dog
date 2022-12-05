@@ -122,7 +122,7 @@ window.addEventListener('DOMContentLoaded',function () {
     const greymaterial = new THREE.MeshPhongMaterial( {color: 0x696969} );
     //create a black MeshPhongMaterial
     const blackmaterial = new THREE.MeshPhongMaterial( {color: 0x000000} );
-    //creat a bubble MeshPhongMaterial
+    //creat a bubble MeshNormalMaterial
     const bubblematerial = new THREE.MeshNormalMaterial( {
         //color: 0xF0F8FF,
         opacity: 0.6,
