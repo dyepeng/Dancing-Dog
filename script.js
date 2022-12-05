@@ -80,14 +80,14 @@ window.addEventListener('DOMContentLoaded',function () {
     //init render, scene, camera
 
     //create a renderer
-    const renderer = new THREE.WebGLRenderer();
+    const renderer = new THREE.WebGLRenderer({
+        alpha: true
+    });
     document.body.appendChild(renderer.domElement);
     const canvas=renderer.domElement;
 
     //create a scene
     const scene = new THREE.Scene();
-    //change the background color
-    scene.background = new THREE.Color(0xFFC1C1);
 
     //create a camera
     const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 5, 1000);
@@ -371,6 +371,37 @@ window.addEventListener('DOMContentLoaded',function () {
     
     createBubbles();
 
+    //create trees div
+    let trees_div = document.createElement("div");
+    trees_div.classList.add("trees");
+    
+    //create trees
+    let trees = [];
+    let tree_count = 5;
+    function creatTrees(){
+        for(let i=0;i<tree_count;i++){
+            let img = document.createElement("img");
+            img.src="./image/tree"+i+".png";
+            img.classList.add("tree");
+            let left_dis=-25+i*25;
+            let top_dis=15+i%2*3;
+            img.style.left=left_dis+"vw";
+            img.style.top=top_dis+"vh";
+            trees_div.appendChild(img);
+            trees[i]=img;
+        }
+    };
+
+    creatTrees();
+    
+    //function for add trees
+    function addTrees(){
+        document.body.appendChild(trees_div);
+        trees.forEach(tree => {
+            trees_div.appendChild(tree);
+        });        
+    }          
+
 
 
     //helper system, de-comment if needed
@@ -464,6 +495,9 @@ window.addEventListener('DOMContentLoaded',function () {
                 scene.remove(bubbles);
                 console.log("removebubbles");
             }
+            if(document.body.contains(trees_div)){
+                document.body.removeChild(trees_div);
+            }
         }
         defaultEventSet();
         defaultRotationSet(time);
@@ -475,6 +509,11 @@ window.addEventListener('DOMContentLoaded',function () {
 
     //bounce statement of the dog
     function bounceAnimate(time){
+        if(transition){
+            addTrees();
+            console.log("addtrees");
+        }
+
         function feetBounce(speed, amplitude){
             const phase_array = [0,2,4,6];
             let foot_index = 0;
@@ -517,6 +556,15 @@ window.addEventListener('DOMContentLoaded',function () {
         }
 
         headGroupShake(0.01, 0.08);
+
+        function treesMove(speed){
+            for(let i=0; i<tree_count; i++){
+                let left_dis = (25*i+speed*time)%125-25;
+                trees[i].style.left=left_dis+"vw"; 
+            };
+        }
+
+        treesMove(0.01);
     }
 
     //peaceful state of the dog
@@ -774,37 +822,37 @@ window.addEventListener('DOMContentLoaded',function () {
             text.style.display = "none";
             if(mood==="bounce"){
                 //change the background color
-                scene.background = new THREE.Color(0x8FBC8F);
+                document.body.style.background = "#8FBC8F";
                 bounceAnimate(time);
                 console.log("bounce");
             }
             if(mood==="peaceful"){
                 //change the background color
-                scene.background = new THREE.Color(0x4682B4);
+                document.body.style.background = "#4682B4";
                 peacefulAnimate(time);
                 console.log("peaceful");
             }
             if(mood==="sorrowful"){
                 //change the background color
-                scene.background = new THREE.Color(0xC06C84);
+                document.body.style.background = "#C06C84";
                 sorrowfulAnimate(time);
                 console.log("sorrowful");
             }
             if(mood==="chill"){
                 //change the background color
-                scene.background = new THREE.Color(0xCD7054);
+                document.body.style.background = "#CD7054";
                 chillAnimate(time);
                 console.log("chill");
             }
             if(mood==="hungry"){
                 //change the background color
-                scene.background = new THREE.Color(0xFED867);
+                document.body.style.background = "#FED867";
                 hungryAnimate(time);
                 console.log("hungry");
             }
             if(mood==="spring"){
                 //change the background color
-                scene.background = new THREE.Color(0x363636);
+                document.body.style.background = "#363636";
                 springAnimate(time);
                 console.log("spring");
             }
