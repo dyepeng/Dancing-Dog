@@ -90,7 +90,7 @@ window.addEventListener('DOMContentLoaded',function () {
     scene.background = new THREE.Color(0xFFC1C1);
 
     //create a camera
-    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 5, 1000);
     camera.position.set(30, 10, 30);
     camera.lookAt(0, 0, 0);
 
@@ -122,6 +122,13 @@ window.addEventListener('DOMContentLoaded',function () {
     const greymaterial = new THREE.MeshPhongMaterial( {color: 0x696969} );
     //create a black MeshPhongMaterial
     const blackmaterial = new THREE.MeshPhongMaterial( {color: 0x000000} );
+    //creat a bubble MeshPhongMaterial
+    const bubblematerial = new THREE.MeshNormalMaterial( {
+        //color: 0xF0F8FF,
+        opacity: 0.7,
+        transparent: true,
+        side: THREE.DoubleSide,
+    } );
 
 
 
@@ -290,31 +297,79 @@ window.addEventListener('DOMContentLoaded',function () {
     )
 
     //import raindrop and texture
-    let rain, rainBuffer;
-    const rainCount = 1000;
+    let rain, rain_buffer;
+    const rain_count = 1000;
 
-    //create rain drop
+    //create rain drop but not add it now
     function createCherryBlossom() {
         const textureLoader = new THREE.TextureLoader();
-        rainBuffer = new THREE.BufferGeometry();
-        let posRain = new Float32Array(rainCount*3);
-        for (let i = 0; i<(rainCount*3); i += 3) {
-            posRain[i] = Math.random() * 200 - 100;
-            posRain[i+1] = Math.random() * 100 - 40;
-            posRain[i+2] = Math.random() * 200 - 100;
+        rain_buffer = new THREE.BufferGeometry();
+        let rain_position = new Float32Array(rain_count*3);
+        for (let i = 0; i<(rain_count*3); i += 3) {
+            rain_position[i] = Math.random() * 200 - 100;
+            rain_position[i+1] = Math.random() * 100 - 40;
+            rain_position[i+2] = Math.random() * 200 - 100;
         }
 
-        rainBuffer.setAttribute('position', new THREE.BufferAttribute(posRain, 3));
-        let rainMaterial = new THREE.PointsMaterial({
+        rain_buffer.setAttribute('position', new THREE.BufferAttribute(rain_position, 3));
+        let rainmaterial = new THREE.PointsMaterial({
             map: textureLoader.load('./image/cherryBlossom.png'),
             // color: 0x000000,
             size: 2,
             transparent: true
         });
-        rain = new THREE.Points(rainBuffer, rainMaterial);
+        rain = new THREE.Points(rain_buffer, rainmaterial);
     }
 
     createCherryBlossom();
+
+    //create bubbles but not add it now
+    //create bubble geometry
+    const bubble_radius = 2;
+    const bubble_widthSegments = 20;
+    const bubble_heightSegments = 20;
+    const bubble_geometry = new THREE.SphereGeometry(bubble_radius, bubble_widthSegments, bubble_heightSegments);
+    //create instanced bubbles matrix
+    let bubble_count = 700;
+    let bubbles;
+    let bubble_matrix;
+
+    //create randon Matrix4 for one bubble
+    function randomizeMatrix(){
+        let matrix = new THREE.Matrix4();
+        
+        const bubble_position = new THREE.Vector3();
+		const bubble_rotation = new THREE.Euler();
+		const bubble_quaternion = new THREE.Quaternion();
+		const bubble_scale = new THREE.Vector3();
+
+		bubble_position.x = Math.random() * 200 - 100;
+		bubble_position.y = Math.random() * 100 - 50;
+		bubble_position.z = Math.random() * 200 - 100;
+
+		bubble_rotation.x = Math.random() * 2 * Math.PI;
+		bubble_rotation.y = Math.random() * 2 * Math.PI;
+		bubble_rotation.z = Math.random() * 2 * Math.PI;
+
+		bubble_quaternion.setFromEuler(bubble_rotation);
+
+		bubble_scale.x = bubble_scale.y = bubble_scale.z = Math.random();
+
+		matrix.compose(bubble_position, bubble_quaternion, bubble_scale);
+        return matrix;
+    };
+    
+    //create bubble mesh
+    function createBubbles(){
+        bubbles = new THREE.InstancedMesh(bubble_geometry, bubblematerial, bubble_count);
+        for(let i = 0; i < bubble_count; i++){
+            bubble_matrix = randomizeMatrix();
+            bubbles.setMatrixAt(i, bubble_matrix);
+            bubbles.setColorAt(i, new THREE.Color(Math.random(), Math.random(), Math.random(), Math.random()))
+        }
+    };
+    
+    createBubbles();
 
 
 
@@ -403,7 +458,12 @@ window.addEventListener('DOMContentLoaded',function () {
                 scene.remove(rain);
                 console.log("removerain");
             }
-            
+            if(bubbles===undefined||bubbles.parent===null){
+                ;
+            }else{
+                scene.remove(bubbles);
+                console.log("removebubbles");
+            }
         }
         defaultEventSet();
         defaultRotationSet(time);
@@ -461,6 +521,11 @@ window.addEventListener('DOMContentLoaded',function () {
 
     //peaceful state of the dog
     function peacefulAnimate(time){
+        if(transition){
+            scene.add(bubbles);
+            console.log("addbubbles");
+        }
+
         function feetSwim(speed, amplitude){
             const phase_array = [0,0,2,2];
             let foot_index = 0;
@@ -514,6 +579,29 @@ window.addEventListener('DOMContentLoaded',function () {
         }
 
         dogSwimFly(0.003, 1.5);
+
+        function bubblesFloat(movespeed, scalespeed, scaleamplitude){
+            let current_matrix = new THREE.Matrix4();
+            let current_bubble_position = new THREE.Vector3();
+            let current_bubble_quaternion = new THREE.Quaternion();
+		    let current_bubble_scale = new THREE.Vector3();
+            for(let i = 0; i < bubble_count; i++){
+                bubbles.getMatrixAt(i,current_matrix);
+                current_matrix.decompose(current_bubble_position, current_bubble_quaternion, current_bubble_scale);
+                current_bubble_position.z-=movespeed;
+                if(current_bubble_position.z<-100){
+		            current_bubble_position.z = Math.random() * 150 - 50;
+                }
+                current_bubble_scale.x=current_bubble_scale.x*(1+scaleamplitude*Math.sin(scalespeed*time+i));
+                current_bubble_scale.y=current_bubble_scale.y*(1+scaleamplitude*Math.sin(scalespeed*time+i));
+                current_bubble_scale.z=current_bubble_scale.z*(1+scaleamplitude*Math.sin(scalespeed*time+i));
+                current_matrix.compose(current_bubble_position, current_bubble_quaternion, current_bubble_scale);
+                bubbles.setMatrixAt(i, current_matrix);
+            }    
+        }
+        bubbles.instanceMatrix.needsUpdate = true;
+
+        bubblesFloat(0.3, 0.03, 0.015);
     }
 
     //sorrowful state of the dog
@@ -656,7 +744,7 @@ window.addEventListener('DOMContentLoaded',function () {
 
         function fall(){
             const positions = rain.geometry.attributes.position.array;
-            for (let i=0; i<(rainCount*3); i += 3) {
+            for (let i=0; i<(rain_count*3); i += 3) {
                 let speed = 0.2;
                 positions[i] += Math.random()*0.06 - 0.03;
                 positions[i+1] -= speed + Math.random() * 0.05;
