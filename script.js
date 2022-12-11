@@ -5,13 +5,30 @@ import { GLTFLoader } from './node_modules/three/examples/jsm/loaders/GLTFLoader
 import { DragControls } from "./node_modules/three/examples/jsm/controls/DragControls.js";
 
 window.addEventListener('DOMContentLoaded',function () {
-    //elements
+    //open about page
+    const aboutPage = document.getElementById("about");
+    const openButton = document.getElementById("open-about");
+    const closeButton = document.getElementById("close-about");
+
+    openButton.onclick = function() {
+        aboutPage.style.display = "block";
+    };
+    
+    closeButton.onclick = function() {
+        aboutPage.style.display = "none";
+    };
+    
+
+    
+    //interactive elements
     const switchButton = document.querySelector(".switchbutton");
     const playButton = document.querySelector(".playbutton");
     const playIcon = document.querySelector(".playicon");
     const audioPlay = document.querySelector("#audioplay");
-    const text = this.document.querySelector(".text");
-
+    const text = document.querySelector(".text");
+    const muteButton = document.querySelector("#mute");
+    const muteIcon = document.querySelector(".mute-icon");
+    const songInfo = document.querySelector("#song-info");
 
 
     //music part
@@ -21,6 +38,8 @@ window.addEventListener('DOMContentLoaded',function () {
     let allMusicIndex = [1,2,3,4,5,6];
     let firstsong = true;
     let mood;
+    let artist;
+    let songTitle;
 
     //randomly choose the song until every song is played
     function chooseSong(){
@@ -43,6 +62,12 @@ window.addEventListener('DOMContentLoaded',function () {
                 console.log(list["track"+musicIndex].uri);
                 let musicUri = list["track"+musicIndex].uri;
                 audioPlay.setAttribute("src", musicUri);
+                //add artist
+                artist = list["track"+musicIndex].artist;
+                document.getElementById("artist").innerHTML = artist;
+                //add song title
+                songTitle = list["track"+musicIndex].name;
+                document.getElementById("song-title").innerHTML = songTitle;
                 //before switch dog state we need to set back to default
                 defaultAnimate();
                 transition=true;
@@ -69,11 +94,23 @@ window.addEventListener('DOMContentLoaded',function () {
         }
     }
 
+    //mute function
+    function muteSound() {
+        if(audioPlay.muted) {
+            audioPlay.muted = false;
+            muteIcon.setAttribute ("src", "./image/soundIcon.png");   
+        } else {
+            audioPlay.muted = true;
+            muteIcon.setAttribute ("src", "./image/muteIcon.png")
+        }
+    }
+
     //choose the first song, then play or switch
     playMusic();
     playIcon.setAttribute("src", "./image/playIcon.png");
     playButton.addEventListener("click", controlSongPlay);
     switchButton.addEventListener("click", playMusic);
+    muteButton.addEventListener("click", muteSound);
 
 
 
@@ -365,7 +402,7 @@ window.addEventListener('DOMContentLoaded',function () {
         for(let i = 0; i < bubble_count; i++){
             bubble_matrix = randomizeMatrix();
             bubbles.setMatrixAt(i, bubble_matrix);
-            bubbles.setColorAt(i, new THREE.Color(Math.random(), Math.random(), Math.random(), Math.random()))
+            //bubbles.setColorAt(i, new THREE.Color(Math.random(), Math.random(), Math.random(), Math.random()))
         }
     };
     
@@ -816,9 +853,10 @@ window.addEventListener('DOMContentLoaded',function () {
         if(audioPlay.paused){
             //scene.background = new THREE.Color(0xFFC1C1);
             //defaultAnimate();
-            //text.style.display = "block";
+            songInfo.style.display='none';
             console.log("default");
         }else{
+            songInfo.style.display='block';
             text.style.display = "none";
             if(mood==="bounce"){
                 //change the background color
