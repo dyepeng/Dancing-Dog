@@ -884,7 +884,7 @@ window.addEventListener('DOMContentLoaded',function () {
             }
             if(mood==="hungry"){
                 //change the background color
-                document.body.style.background = "#FED867";
+                document.body.style.background = "#E1C16E";
                 hungryAnimate(time);
                 console.log("hungry");
             }
